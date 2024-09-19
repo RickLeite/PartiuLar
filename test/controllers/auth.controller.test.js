@@ -1,6 +1,6 @@
 // Import Jest explicitly for ES modules
 import { jest } from '@jest/globals';
-import { register, login, logout } from '../controllers/auth.controller';
+import { register, login, logout } from '../../src/controllers/auth.controller';
 
 describe('Auth Controller', () => {
 
