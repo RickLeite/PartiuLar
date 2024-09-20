@@ -8,8 +8,9 @@ router.get('/home', (req, res) => {
     res.send('Get home');
 });
 
-router.post('/home', (req, res) => {
+router.post('/homes', (req, res) => {
     res.send('Create home');
 });
 
+export default router;
 module.exports = router;
