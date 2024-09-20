@@ -9,7 +9,6 @@ app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 
 
-
 app.get('/inicio', (req, res) => {
     res.send("Pagina inicial")
 })

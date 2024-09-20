@@ -1,4 +1,4 @@
-import {getUsers, getUserById, postUser} from '../controllers/user.controller.js'
+import {getUsers, getUserById, postUser, editarUser, deleteUser} from '../controllers/user.controller.js'
 import express from 'express';
 
 const router = express.Router();
@@ -7,8 +7,13 @@ const router = express.Router();
 
 
 router.get('/users', getUsers);
-router.get('/:id', getUserById)
-router.post('/inserirUser', postUser)
+router.get('/users/:id', getUserById);
+
+router.post('/inserirUser', postUser);
+
+router.put("/editarUser", editarUser)
+
+router.delete("/deleteUser/:condicao", deleteUser);
 
 
 router.post('/user', (req, res) => {
