@@ -1,92 +1,47 @@
-import { run } from "../database.js";
+
+import { run, query } from "../database.js";
+
+
+export async function save(body) {
+    console.log("Função save");
+    const { nome, email } = body;
+    const data = await query(
+        'INSERT INTO usuarios (nome, email) VALUES ($1, $2) RETURNING *',
+        [nome, email]
+    );
+    return data.rows[0];
+}
 
 
 export async function findAll() {
-    console.log("Função findAll")
-    const connection= await run();
-
-    const data = await connection.execute(
-        `SELECT * FROM usuarios `
-    );
-
-    await connection.close();
+    console.log("Função findAll");
+    const data = await query('SELECT * FROM usuarios');
     return data.rows;
 }
+
 export async function findUserById(id) {
-    console.log("Função findUserById")
-    const connection= await run();
-
-    const data = await connection.execute(
-        `SELECT * FROM usuarios WHERE id = ${id}`
-    );
-
-    await connection.close();
-    return data.rows;
+    console.log("Função findUserById");
+    const data = await query('SELECT * FROM usuarios WHERE id = $1', [id]);
+    return data.rows[0];
 }
 
-
-
-export async function save(body){
-    console.log("Função save")
-    const connection= await run();
-
-    const user = await connection.execute(
-        `INSERT INTO usuarios (id, nome, email) VALUES (:id, :nome, :email)`,
-        {
-            id: body.id,  // Mapeia o valor body.id para o placeholder :id
-            nome: body.nome,  // Mapeia o valor body.nome para o placeholder :nome
-            email: body.email,  // Mapeia o valor body.cep para o placeholder :cep
-        },
-
-        { autoCommit: true }
+export async function updateUser(body) {
+    console.log("Função updateUser");
+    const { id, nome, email } = body;
+    const data = await query(
+        'UPDATE usuarios SET nome = $1, email = $2 WHERE id = $3 RETURNING *',
+        [nome, email, id]
     );
-
-    await connection.close();
-    return findUserById(body.id);
+    return data.rows[0];
 }
 
-export async function updateUser(body){
-    console.log("Função save")
-    const connection= await run();
-
-    const user = await connection.execute(
-        `UPDATE usuarios SET nome = :nome,
-                             email = :email
-         WHERE id = :id`,
-        {
-            id: body.id,  // Mapeia o valor body.id para o placeholder :id
-            nome: body.nome,  // Mapeia o valor body.nome para o placeholder :nome
-            email: body.email,  // Mapeia o valor body.cep para o placeholder :cep
-        },
-
-        { autoCommit: true }
-    );
-
-    await connection.close();
-    return findUserById(body.id);
-}
-
-export async function deleteUserByIdAndEmail(condicao){
-
-    const connection= await run();
-
-    if (condicao.includes("@")){
-        const user = await connection.execute(
-            `DELETE FROM usuarios WHERE email = '${condicao}' `,
-            {},
-           { autoCommit: true }
-        );
-    }else {
-        let id = parseInt(condicao);
-
-        const user = await connection.execute(
-            `DELETE FROM usuarios WHERE id = ${condicao} `,
-                {},
-        { autoCommit: true }
-        );
+export async function deleteUserByIdAndEmail(condicao) {
+    let data;
+    if (condicao.includes("@")) {
+        data = await query('DELETE FROM usuarios WHERE email = $1 RETURNING *', [condicao]);
+    } else {
+        const id = parseInt(condicao);
+        data = await query('DELETE FROM usuarios WHERE id = $1 RETURNING *', [id]);
     }
-    
-    await connection.close();
-    return findAll();
+    return data.rows[0];
 }
-

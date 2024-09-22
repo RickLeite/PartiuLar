@@ -1,16 +1,25 @@
-import oracledb from 'oracledb';
-oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
+import pg from 'pg';
 
+const { Pool } = pg;
 
-//DADOS DO BANCO ORACLE 
+const pool = new Pool({
+    user: 'admin',
+    host: 'localhost',
+    database: 'partiular',
+    password: 'Adm1nPassw0rd',
+    port: 5432,
+});
+
 export async function run() {
-
-    const connection = await oracledb.getConnection ({
-        user          : "BOOTCAMP",
-        password      : "102030ian",
-        connectString : "localhost/XEPDB1"
-    });
-
-    return connection
+    const client = await pool.connect();
+    return client;
 }
 
+export async function query(text, params) {
+    const client = await pool.connect();
+    try {
+        return await client.query(text, params);
+    } finally {
+        client.release();
+    }
+}
