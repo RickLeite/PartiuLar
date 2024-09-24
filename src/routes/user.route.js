@@ -3,21 +3,19 @@ import express from 'express';
 
 const router = express.Router();
 
-// EXEMPLOS DE ROTAS
 
-
+//ROTAS GET
 router.get('/users', getUsers);
 router.get('/users/:id', getUserById);
 
+//ROTAS POST
 router.post('/inserirUser', postUser);
 
+//ROTAS PUT
 router.put("/editarUser", editarUser)
 
+//ROTAS DELETE
 router.delete("/deleteUser/:condicao", deleteUser);
 
-
-router.post('/user', (req, res) => {
-    res.send('Post user');
-});
 
 export default router;
