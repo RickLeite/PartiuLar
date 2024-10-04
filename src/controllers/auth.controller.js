@@ -1,37 +1,47 @@
-import { query } from '../database.js';
+import prisma from '../lib/prisma.js';
 import bcrypt from 'bcrypt';
 
 export const register = async (req, res) => {
     const { nome, email, telefone, senha, genero } = req.body;
 
+    console.log('nome:', nome);
+    console.log('email:', email);
+    console.log('telefone:', telefone);
+    console.log('senha:', senha);
+    console.log('genero:', genero);
+
+
     try {
-        const userExists = await query('SELECT * FROM usuarios WHERE email = $1', [email]);
-        if (userExists.rows.length > 0) {
-            return res.status(400).json({ message: 'Usuário já existe' });
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(senha, salt);
-
-        const newUser = await query(
-            'INSERT INTO usuarios (nome, email, telefone, senha, genero) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [nome, email, telefone, hashedPassword, genero]
-        );
-
-        res.status(201).json({ message: 'Usuário registrado com sucesso', user: newUser.rows[0] });
+        const hashedPassword = await bcrypt.hash(senha, 10);
+        const newUser = await prisma.usuario.create({
+            data: { nome, email, telefone, senha: hashedPassword, genero },
+        });
+        res.status(201).json(newUser);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Erro ao registrar usuário' });
     }
 };
 
-export const login = (req, res) => {
+export const login = async (req, res) => {
     const { email, password } = req.body;
-    console.log(req.body);
 
-    // VERIFICAR SE email e password ESTÃO CORRETOS
-}
+    try {
+        const user = await prisma.usuario.findUnique({
+            where: { email: email },
+        });
 
-export const logout = (req, res) => {
-    res.send('Logout');
-}
+        if (!user) {
+            return res.status(400).json({ message: 'Usuário não encontrado' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.senha);
+
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Senha incorreta' });
+        }
+
+        res.status(200).json({ message: 'Login bem-sucedido' });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao fazer login' });
+    }
+};
