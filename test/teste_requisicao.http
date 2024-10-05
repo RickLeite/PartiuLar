@@ -1,10 +1,13 @@
 ### Teste Inserir User
-POST http://localhost:8800/api/user/inserirUser
+POST http://localhost:8800/api/auth/register
 Content-Type: application/json
 
 {
-    "nome": "diogo oliveira",
-    "email": "diogo.oli@gmail.com"
+    "nome": "John Doe",
+    "email": "john.doe@example.com",
+    "telefone": "1234567890",
+    "senha": "password123",
+    "genero": "female",
 }
 
 ### Teste Buscar Todos os Usuários
