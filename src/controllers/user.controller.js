@@ -61,7 +61,9 @@ export const updateUser = async (req, res) => {
                 // ...(avatar && { avatar: avatar }), // para atualização de imagem de perfil
             },
         });
-        res.status(200).json(updatedUser);
+
+        const { senha: senha, ...user } = updatedUser;
+        res.status(200).json(user);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Erro ao Atualizar usuário' });
