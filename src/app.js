@@ -1,19 +1,23 @@
-import express from 'express';
-import authRouter from './routes/auth.route.js';
-import cookieParser from 'cookie-parser';
-import testRouter from './routes/test.route.js';
-import userRouter from './routes/user.route.js';
-import postRouter from './routes/post.route.js';
+import express from "express";
+import cookieParser from "cookie-parser";
+import authRoute from "./routes/auth.route.js";
+import postRoute from "./routes/post.route.js";
+import testRoute from "./routes/test.route.js";
+import userRoute from "./routes/user.route.js";
+import chatRoute from "./routes/chat.route.js";
+import messageRoute from "./routes/message.route.js";
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/api/auth', authRouter);
-app.use('/api/test', testRouter);
-app.use('/api/users', userRouter);
-app.use('/api/posts', postRouter);
+app.use("/api/auth", authRoute);
+app.use("/api/users", userRoute);
+app.use("/api/posts", postRoute);
+app.use("/api/test", testRoute);
+app.use("/api/chats", chatRoute);
+app.use("/api/messages", messageRoute);
 
 const PORT = 8800;
 app.listen(PORT, () => {

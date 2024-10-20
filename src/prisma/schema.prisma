@@ -8,14 +8,16 @@ datasource db {
 }
 
 model Usuario {
-  id       Int     @id @default(autoincrement())
+  id       Int       @id @default(autoincrement())
   nome     String
-  email    String  @unique
+  email    String    @unique
   telefone String
   senha    String
   genero   String
   avatar   String?
-  Post     Post[]
+  posts    Post[]
+  chats    Chat[]
+  messages Message[]
 }
 
 model Post {
@@ -30,6 +32,24 @@ model Post {
   latitude  String
   longitude String
   createdAt DateTime @default(now())
+  usuarioId Int
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+}
+
+model Chat {
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  participants Usuario[]
+  messages     Message[]
+  lastMessage  String?
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+  chatId    Int
+  chat      Chat     @relation(fields: [chatId], references: [id])
   usuarioId Int
   usuario   Usuario  @relation(fields: [usuarioId], references: [id])
 }
