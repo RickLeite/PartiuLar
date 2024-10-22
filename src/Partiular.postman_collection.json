@@ -145,6 +145,25 @@
 					"response": []
 				},
 				{
+					"name": "Get Profile Posts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/users/profilePosts/1",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"profilePosts",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update User",
 					"request": {
 						"method": "PUT",
@@ -188,25 +207,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "Get Profile Posts",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/users/profilePosts/1",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"users",
-								"profilePosts",
-								"1"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -237,7 +237,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"titulo\": \"Nossa republica\",\r\n  \"preco\": 100,\r\n  \"descricao\": \"descricao republica LOL.\",\r\n  \"img\": [\r\n  \"http://examplo.com/image.jpg\",\r\n    \"http://examplo.com/image2.jpg\"\r\n  ],\r\n  \"endereco\": \"rua do perigo numero 7\",\r\n  \"cidade\": \"campinas\",\r\n  \"estado\": \"SP\",\r\n  \"latitude\": \"12.345678\",\r\n  \"longitude\": \"98.765432\"\r\n\r\n}",
+							"raw": "{\r\n  \"titulo\": \"Nossa republica\",\r\n  \"preco\": 100,\r\n  \"descricao\": \"descricao republica LOL.\",\r\n  \"img\": [\r\n  \"http://examplo.com/image.jpg\",\r\n    \"http://examplo.com/image2.jpg\"\r\n  ],\r\n  \"endereco\": \"rua do perigo numero 7\",\r\n  \"cidade\": \"campinas\",\r\n  \"estado\": \"SP\",\r\n  \"latitude\": \"12.345678\",\r\n  \"longitude\": \"98.765432\"\r\n\r\n}\r\n\r\n\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -316,6 +316,123 @@
 							],
 							"path": [
 								"posts",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Chats",
+			"item": [
+				{
+					"name": "Get Chats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/chats",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"chats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chat",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/chats/1",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"chats",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Chat",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"receiverId\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/chats",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"chats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Chat",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/chats/read/id",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"chats",
+								"read",
+								"id"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Messages",
+			"item": [
+				{
+					"name": "Add Messages",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"first message\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/messages/1",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"messages",
 								"1"
 							]
 						}
