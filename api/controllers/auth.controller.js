@@ -21,6 +21,10 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     const { email, senha } = req.body;
 
+    if (!email) {
+        return res.status(400).json({ message: 'Email é obrigatório' });
+    }
+
     try {
         const user = await prisma.usuario.findUnique({
             where: { email: email },

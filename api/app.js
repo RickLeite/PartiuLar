@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoute from "./routes/auth.route.js";
 import postRoute from "./routes/post.route.js";
@@ -9,6 +10,9 @@ import messageRoute from "./routes/message.route.js";
 
 const app = express();
 
+const CLIENT_URL = 'http://127.0.0.1:5173';
+
+app.use(cors({ origin: CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
