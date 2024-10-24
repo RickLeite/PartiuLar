@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 export const register = async (req, res) => {
     const { nome, email, telefone, senha, genero } = req.body;
 
+    console.log('req.body:', req.body);
     try {
         const hashedPassword = await bcrypt.hash(senha, 10);
         const newUser = await prisma.usuario.create({
