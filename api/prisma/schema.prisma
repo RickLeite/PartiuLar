@@ -21,19 +21,21 @@ model Usuario {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  titulo    String
-  preco     Int
-  descricao String
-  img       Json
-  endereco  String
-  cidade    String
-  estado    String
-  latitude  String
-  longitude String
-  createdAt DateTime @default(now())
-  usuarioId Int
-  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  id          Int      @id @default(autoincrement())
+  titulo      String
+  preco       Int
+  descricao   String
+  img         Json
+  endereco    String
+  cidade      String
+  estado      String
+  latitude    String
+  longitude   String
+  tipo        String   @default("aluguel")
+  propriedade String   @default("apartamento")
+  createdAt   DateTime @default(now())
+  usuarioId   Int
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
 }
 
 model Chat {

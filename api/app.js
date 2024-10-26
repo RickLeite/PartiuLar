@@ -14,10 +14,13 @@ dotenv.config();
 console.log('Database URL:', process.env.DATABASE_URL);
 
 const app = express();
-const CLIENT_URL = 'http://localhost:5173';
-//const CLIENT_URL = 'http://127.0.0.1:5173';
 
-app.use(cors({ origin: CLIENT_URL, credentials: true }));
+// Configuração CORS simplificada para desenvolvimento
+app.use(cors({
+    origin: true, // Permite todas as origens
+    credentials: true // Mantém suporte a cookies
+}));
+
 app.use(express.json());
 app.use(cookieParser());
 
