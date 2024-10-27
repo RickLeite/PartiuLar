@@ -9,7 +9,6 @@ export const getPosts = async (req, res) => {
         const posts = await prisma.post.findMany({
             where: {
                 AND: [
-                    // Filtros básicos
                     query.cidade ? { cidade: query.cidade } : {},
                     query.estado ? { estado: query.estado } : {},
                     query.titulo ? {
@@ -18,14 +17,13 @@ export const getPosts = async (req, res) => {
                             mode: 'insensitive'
                         }
                     } : {},
-
-                    // Filtro de preço
                     {
                         preco: {
                             gte: query.precoMin ? parseInt(query.precoMin) : undefined,
                             lte: query.precoMax ? parseInt(query.precoMax) : undefined,
                         }
-                    }
+                    },
+                    query.propriedade ? { propriedade: query.propriedade } : {}
                 ]
             },
             include: {
@@ -52,12 +50,17 @@ export const getPosts = async (req, res) => {
 //GET / api / posts ? cidade = Campinas & precoMin=500 & precoMax=1000 & titulo=republica
 
 export const getPost = async (req, res) => {
-    const id = req.params.id;
-    const token = req.cookies?.token;
-
     try {
+        const postId = parseInt(req.params.id);
+
+        if (isNaN(postId)) {
+            return res.status(400).json({ message: "ID inválido" });
+        }
+
         const post = await prisma.post.findUnique({
-            where: { id: Number(id) },
+            where: {
+                id: postId
+            },
             include: {
                 usuario: {
                     select: {
@@ -74,7 +77,10 @@ export const getPost = async (req, res) => {
             return res.status(404).json({ message: "Post não encontrado" });
         }
 
+        // Get user ID from token if present
         let userId = null;
+        const token = req.cookies?.token;
+
         if (token) {
             try {
                 const decoded = jwt.verify(token, JWT_SECRET);
@@ -104,17 +110,31 @@ export const addPost = async (req, res) => {
     try {
         // Validação básica
         if (!body.titulo || !body.preco || !body.descricao || !body.endereco || !body.cidade || !body.estado) {
-            return res.status(400).json({ message: "Campos obrigatórios faltando" });
+            return res.status(400).json({
+                message: "Campos obrigatórios faltando",
+                required: ["titulo", "preco", "descricao", "endereco", "cidade", "estado"]
+            });
         }
 
         // Validação de preço
-        if (isNaN(body.preco) || body.preco < 0) {
+        const price = parseFloat(body.preco);
+        if (isNaN(price) || price < 0) {
             return res.status(400).json({ message: "Preço inválido" });
+        }
+
+        // Validação de latitude e longitude
+        const latitude = parseFloat(body.latitude);
+        const longitude = parseFloat(body.longitude);
+        if (isNaN(latitude) || isNaN(longitude)) {
+            return res.status(400).json({ message: "Latitude ou longitude inválida" });
         }
 
         const newPost = await prisma.post.create({
             data: {
                 ...body,
+                preco: price, // Use the parsed price
+                latitude: latitude, // Use the parsed latitude
+                longitude: longitude, // Use the parsed longitude
                 usuarioId: tokenUserId,
                 createdAt: new Date(),
             },
@@ -136,13 +156,18 @@ export const addPost = async (req, res) => {
 };
 
 export const updatePost = async (req, res) => {
-    const id = req.params.id;
-    const tokenUserId = req.userId;
-    const body = req.body;
-
     try {
+        const postId = parseInt(req.params.id);
+        const tokenUserId = req.userId;
+        const body = req.body;
+
+        // Validate if postId is a valid number
+        if (isNaN(postId)) {
+            return res.status(400).json({ message: "ID inválido" });
+        }
+
         const post = await prisma.post.findUnique({
-            where: { id: Number(id) },
+            where: { id: postId }
         });
 
         if (!post) {
@@ -153,17 +178,20 @@ export const updatePost = async (req, res) => {
             return res.status(403).json({ message: "Você não tem permissão para atualizar este post" });
         }
 
-        // Validação de preço se estiver sendo atualizado
-        if (body.preco !== undefined && (isNaN(body.preco) || body.preco < 0)) {
-            return res.status(400).json({ message: "Preço inválido" });
+        // Validate price if it's being updated
+        if (body.preco !== undefined) {
+            const price = parseFloat(body.preco);
+            if (isNaN(price) || price < 0) {
+                return res.status(400).json({ message: "Preço inválido" });
+            }
+            body.preco = price;
         }
 
         const updatedPost = await prisma.post.update({
-            where: { id: Number(id) },
+            where: { id: postId },
             data: {
                 ...body,
-                // Não permite atualizar usuarioId e createdAt
-                usuarioId: undefined,
+                usuarioId: undefined, // Prevent these fields from being updated
                 createdAt: undefined,
             },
             include: {
@@ -184,12 +212,17 @@ export const updatePost = async (req, res) => {
 };
 
 export const deletePost = async (req, res) => {
-    const id = req.params.id;
-    const tokenUserId = req.userId;
-
     try {
+        const postId = parseInt(req.params.id);
+        const tokenUserId = req.userId;
+
+        // Validate if postId is a valid number
+        if (isNaN(postId)) {
+            return res.status(400).json({ message: "ID inválido" });
+        }
+
         const post = await prisma.post.findUnique({
-            where: { id: Number(id) },
+            where: { id: postId }
         });
 
         if (!post) {
@@ -201,7 +234,7 @@ export const deletePost = async (req, res) => {
         }
 
         await prisma.post.delete({
-            where: { id: Number(id) },
+            where: { id: postId }
         });
 
         res.status(200).json({ message: "Post deletado com sucesso" });

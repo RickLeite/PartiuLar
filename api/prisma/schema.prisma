@@ -29,8 +29,8 @@ model Post {
   endereco    String
   cidade      String
   estado      String
-  latitude    String
-  longitude   String
+  latitude    Float
+  longitude   Float
   tipo        String   @default("aluguel")
   propriedade String   @default("apartamento")
   createdAt   DateTime @default(now())
