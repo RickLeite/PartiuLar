@@ -1,0 +1,16 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/templates/default.conf.template
+    environment:
+      - WSL_IP=${WSL_IP}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
