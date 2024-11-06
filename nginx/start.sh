@@ -4,6 +4,9 @@
 export WSL_IP=$(ip addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
 echo "WSL2 IP: $WSL_IP"
 
+# Export para o Vite
+echo "VITE_WSL_IP=$WSL_IP" > .env
+
 # Stop any running containers
 docker compose down
 
