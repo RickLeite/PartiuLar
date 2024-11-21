@@ -8,16 +8,18 @@ datasource db {
 }
 
 model Usuario {
-  id       Int       @id @default(autoincrement())
-  nome     String
-  email    String    @unique
-  telefone String
-  senha    String
-  genero   String
-  avatar   String?
-  posts    Post[]
-  chats    Chat[]
-  messages Message[]
+  id           Int       @id @default(autoincrement())
+  nome         String
+  email        String    @unique
+  telefone     String
+  senha        String
+  genero       String
+  avatar       String?
+  posts        Post[]
+  sentMessages Message[] @relation("SentMessages")
+  chats        Chat[]    @relation("ChatParticipants")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model Post {
@@ -40,19 +42,25 @@ model Post {
 }
 
 model Chat {
-  id           Int       @id @default(autoincrement())
-  createdAt    DateTime  @default(now())
-  participants Usuario[]
-  messages     Message[]
-  lastMessage  String?
+  id            Int       @id @default(autoincrement())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  participants  Usuario[] @relation("ChatParticipants")
+  messages      Message[]
+  lastMessage   String?
+  lastMessageAt DateTime? @default(now())
+  isActive      Boolean   @default(true)
 }
 
 model Message {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   text      String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  readAt    DateTime?
   chatId    Int
-  chat      Chat     @relation(fields: [chatId], references: [id])
-  usuarioId Int
-  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  chat      Chat      @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  senderId  Int
+  sender    Usuario   @relation("SentMessages", fields: [senderId], references: [id])
+  isDeleted Boolean   @default(false)
 }
