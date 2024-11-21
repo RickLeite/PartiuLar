@@ -7,40 +7,63 @@ const JWT_SECRET = "Ye2Xg+0h+k0kiUGoIu62jLTAoYYLTmJ5Zr0idiPSK2Y=";
 export const getPosts = async (req, res) => {
     const query = req.query;
     try {
+        // Limpar os filtros undefined ou vazios do AND
+        const priceFilter = {};
+        if (query.precoMin) priceFilter.gte = parseInt(query.precoMin);
+        if (query.precoMax) priceFilter.lte = parseInt(query.precoMax);
+
         const posts = await prisma.post.findMany({
             where: {
                 AND: [
-                    query.cidade ? { cidade: query.cidade } : {},
-                    query.estado ? { estado: query.estado } : {},
+                    query.cidade ? { cidade: query.cidade } : undefined,
+                    query.estado ? { estado: query.estado } : undefined,
                     query.titulo ? {
                         titulo: {
                             contains: query.titulo,
                             mode: 'insensitive'
                         }
-                    } : {},
-                    {
-                        preco: {
-                            gte: query.precoMin ? parseInt(query.precoMin) : undefined,
-                            lte: query.precoMax ? parseInt(query.precoMax) : undefined,
-                        }
-                    },
-                    query.propriedade ? { propriedade: query.propriedade } : {}
-                ]
+                    } : undefined,
+                    Object.keys(priceFilter).length > 0 ? { preco: priceFilter } : undefined,
+                    query.propriedade ? { propriedade: query.propriedade } : undefined
+                ].filter(Boolean) // Remove undefined values
             },
-            include: {
+            select: {
+                id: true,
+                titulo: true,
+                preco: true,
+                img: true,
+                endereco: true,
+                cidade: true,
+                estado: true,
+                latitude: true,
+                longitude: true,
+                tipo: true,
+                propriedade: true,
+                createdAt: true,
+                usuarioId: true,
                 usuario: {
                     select: {
+                        id: true,
                         nome: true,
-                        avatar: true,
-                    },
-                },
+                        avatar: true
+                    }
+                }
             },
             orderBy: {
                 createdAt: 'desc'
             }
         });
 
-        res.status(200).json(posts);
+        // Processando os posts para garantir consistência nos dados
+        const processedPosts = posts.map(post => ({
+            ...post,
+            usuario: {
+                ...post.usuario,
+                id: post.usuarioId  // Garantindo que o ID do usuário está em ambos os lugares
+            }
+        }));
+
+        res.status(200).json(processedPosts);
     } catch (error) {
         console.error("Erro ao buscar posts:", error);
         res.status(500).json({ message: "Erro ao buscar posts" });
